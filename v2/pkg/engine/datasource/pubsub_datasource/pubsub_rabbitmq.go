@@ -14,7 +14,9 @@ import (
 )
 
 type RabbitMQEventConfiguration struct {
-	Queues []string `json:"queues"`
+	Queues     []string `json:"queues"`
+	Exchange   string   `json:"exchange"`
+	RoutingKey string   `json:"routingKey"`
 }
 
 type RabbitMQConnector interface {

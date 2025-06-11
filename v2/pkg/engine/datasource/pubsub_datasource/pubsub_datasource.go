@@ -52,15 +52,15 @@ type Configuration struct {
 }
 
 type Planner[T Configuration] struct {
-	id                        int
-	config                    Configuration
-	natsPubSubByProviderID    map[string]NatsPubSub
-	kafkaPubSubByProviderID   map[string]KafkaPubSub
+	id                         int
+	config                     Configuration
+	natsPubSubByProviderID     map[string]NatsPubSub
+	kafkaPubSubByProviderID    map[string]KafkaPubSub
 	rabbitMQPubSubByProviderID map[string]RabbitMQPubSub
-	eventManager              any
-	rootFieldRef              int
-	variables                 resolve.Variables
-	visitor                   *plan.Visitor
+	eventManager               any
+	rootFieldRef               int
+	variables                  resolve.Variables
+	visitor                    *plan.Visitor
 }
 
 func (p *Planner[T]) SetID(id int) {
@@ -251,7 +251,7 @@ func (p *Planner[T]) ConfigureFetch() resolve.FetchConfiguration {
 		}
 
 		return resolve.FetchConfiguration{
-			Input:      v.publishEventConfiguration.MarshalJSONTemplate(),
+			Input:      string(v.publishEventConfiguration.MarshalJSONTemplate()),
 			Variables:  p.variables,
 			DataSource: dataSource,
 			PostProcessing: resolve.PostProcessingConfiguration{
@@ -355,26 +355,40 @@ func (p *Planner[T]) DownstreamResponseFieldAlias(_ int) (alias string, exists b
 	return "", false
 }
 
+
+
+
+
+
+
+
+
+
+
+// Ensure interfaces are satisfied (compile-time check)
+var _ resolve.DataSource = (*RabbitMQPublishDataSource)(nil)
+var _ resolve.SubscriptionDataSource = (*RabbitMQSubscriptionSource)(nil)
+
 func NewFactory[T Configuration](executionContext context.Context, natsPubSubByProviderID map[string]NatsPubSub, kafkaPubSubByProviderID map[string]KafkaPubSub, rabbitMQPubSubByProviderID map[string]RabbitMQPubSub) *Factory[T] {
 	return &Factory[T]{
-		executionContext:          executionContext,
-		natsPubSubByProviderID:    natsPubSubByProviderID,
-		kafkaPubSubByProviderID:   kafkaPubSubByProviderID,
+		executionContext:           executionContext,
+		natsPubSubByProviderID:     natsPubSubByProviderID,
+		kafkaPubSubByProviderID:    kafkaPubSubByProviderID,
 		rabbitMQPubSubByProviderID: rabbitMQPubSubByProviderID,
 	}
 }
 
 type Factory[T Configuration] struct {
-	executionContext          context.Context
-	natsPubSubByProviderID    map[string]NatsPubSub
-	kafkaPubSubByProviderID   map[string]KafkaPubSub
+	executionContext           context.Context
+	natsPubSubByProviderID     map[string]NatsPubSub
+	kafkaPubSubByProviderID    map[string]KafkaPubSub
 	rabbitMQPubSubByProviderID map[string]RabbitMQPubSub
 }
 
 func (f *Factory[T]) Planner(_ abstractlogger.Logger) plan.DataSourcePlanner[T] {
 	return &Planner[T]{
-		natsPubSubByProviderID:    f.natsPubSubByProviderID,
-		kafkaPubSubByProviderID:   f.kafkaPubSubByProviderID,
+		natsPubSubByProviderID:     f.natsPubSubByProviderID,
+		kafkaPubSubByProviderID:    f.kafkaPubSubByProviderID,
 		rabbitMQPubSubByProviderID: f.rabbitMQPubSubByProviderID,
 	}
 }

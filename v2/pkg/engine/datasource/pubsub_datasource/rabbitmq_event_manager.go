@@ -3,23 +3,31 @@ package pubsub_datasource
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
+
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/engine/plan"
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/engine/resolve"
-	"slices"
 )
 
 type RabbitMQSubscriptionEventConfiguration struct {
 	ProviderID string   `json:"providerId"`
 	Queues     []string `json:"queues"`
+	Exchange   string   `json:"exchange,omitempty"`
+	RoutingKey string   `json:"routingKey,omitempty"`
 }
 
 type RabbitMQPublishEventConfiguration struct {
 	ProviderID string          `json:"providerId"`
 	Queue      string          `json:"queue"`
 	Data       json.RawMessage `json:"data"`
+	Exchange   string          `json:"exchange,omitempty"`
+	RoutingKey string          `json:"routingKey,omitempty"`
 }
 
 func (s *RabbitMQPublishEventConfiguration) MarshalJSONTemplate() string {
+	if s.Exchange != "" && s.RoutingKey != "" {
+		return fmt.Sprintf(`{"queue":"%s", "data": %s, "providerId":"%s", "exchange":"%s", "routingKey":"%s"}`, s.Queue, s.Data, s.ProviderID, s.Exchange, s.RoutingKey)
+	}
 	return fmt.Sprintf(`{"queue":"%s", "data": %s, "providerId":"%s"}`, s.Queue, s.Data, s.ProviderID)
 }
 
@@ -56,8 +64,8 @@ func (p *RabbitMQEventManager) handlePublishEvent(ref int) {
 }
 
 func (p *RabbitMQEventManager) handleSubscriptionEvent(ref int) {
-	if len(p.eventConfiguration.Queues) == 0 {
-		p.visitor.Walker.StopWithInternalErr(fmt.Errorf("expected at least one subscription queue but received %d", len(p.eventConfiguration.Queues)))
+	if len(p.eventConfiguration.Queues) == 0 || p.eventConfiguration.Exchange == "" {
+		p.visitor.Walker.StopWithInternalErr(fmt.Errorf("expected at least one subscription queue or an exchange but received none"))
 		return
 	}
 
@@ -66,5 +74,7 @@ func (p *RabbitMQEventManager) handleSubscriptionEvent(ref int) {
 	p.subscriptionEventConfiguration = &RabbitMQSubscriptionEventConfiguration{
 		ProviderID: p.eventMetadata.ProviderID,
 		Queues:     p.eventConfiguration.Queues,
+		Exchange:   p.eventConfiguration.Exchange,
+		RoutingKey: p.eventConfiguration.RoutingKey,
 	}
 }

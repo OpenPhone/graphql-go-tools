@@ -1,6 +1,6 @@
 module github.com/wundergraph/graphql-go-tools
 
-go 1.20
+go 1.24.0
 
 require (
 	github.com/99designs/gqlgen v0.17.45
@@ -8,13 +8,13 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0
 	github.com/dave/jennifer v1.4.0
 	github.com/davecgh/go-spew v1.1.1
-	github.com/eclipse/paho.mqtt.golang v1.2.0
+	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/evanphx/json-patch/v5 v5.1.0
 	github.com/go-test/deep v1.0.8
 	github.com/gobwas/ws v1.3.1
 	github.com/golang/mock v1.6.0
 	github.com/google/go-cmp v0.6.0
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.3
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
 	github.com/jensneuse/abstractlogger v0.0.4
@@ -67,9 +67,10 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	go.uber.org/goleak v1.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/net v0.26.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/crypto v0.42.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
